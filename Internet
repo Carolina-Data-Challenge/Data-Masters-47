@@ -1,0 +1,9 @@
+library(data.table)
+
+test <- share.of.individuals.using.the.internet
+test["value"] <- test[4]
+
+require(reshape2)
+internet <- dcast(test, Entity ~ Year, value.var="value")
+
+write.csv(internet,'internet.csv')
