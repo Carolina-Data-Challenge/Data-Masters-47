@@ -1,0 +1,81 @@
+library(data.table)
+library(dplyr)
+
+#transpose internet dataset
+test <- share.of.individuals.using.the.internet
+test["value"] <- test[4]
+
+require(reshape2)
+internet <- dcast(test, Entity + Code ~ Year, value.var="value")
+
+write.csv(internet,'internet.csv')
+
+#clean internet file
+internet['measure'] <- "Internet"
+names(internet)[2] <- "ISO"
+names(internet)[1] <- "Country"
+internet <- internet[complete.cases(ISO), ]
+
+#clean GDP file
+gdp_current = GDPfull %>%
+  filter(Subject.Descriptor == "Gross domestic product, current prices") %>%
+  select (-c(Subject.Descriptor, WEO.Subject.Code, Subject.Notes, Units, Scale, Country.Series.specific.Notes, SpecialNotes, TableName)) %>%
+  select (-c(1,3))
+gdp_current['measure'] <- "GDP"
+
+#create fastmerge function
+fastmerge <- function(d1, d2) {
+  d1.names <- names(d1)
+  d2.names <- names(d2)
+  
+  # columns in d1 but not in d2
+  d2.add <- setdiff(d1.names, d2.names)
+  
+  # columns in d2 but not in d1
+  d1.add <- setdiff(d2.names, d1.names)
+  
+  # add blank columns to d2
+  if(length(d2.add) > 0) {
+    for(i in 1:length(d2.add)) {
+      d2[d2.add[i]] <- NA
+    }
+  }
+  
+  # add blank columns to d1
+  if(length(d1.add) > 0) {
+    for(i in 1:length(d1.add)) {
+      d1[d1.add[i]] <- NA
+    }
+  }
+  
+  return(rbind(d1, d2))
+}
+
+#join GDP and internet
+joined <- fastmerge(gdp_current,internet)
+
+#sort new file
+sorted <- joined %>%
+  arrange(Country)
+
+#clean population
+names(population)[1] <- "Country"
+names(population)[2] <- "ISO"
+population['measure'] <- "Population"
+
+#merge the joined with population
+final <- fastmerge(sorted,population)
+
+#sort again
+finalsorted <- final %>%
+    arrange(ISO)
+
+#create list of countries of interest
+ListISO <- finalsorted %>%
+  group_by(ISO) %>%
+  summarize(n=n()) %>%
+  filter(n==3)
+
+#select only countries of interest
+vizdata <- finalsorted[ finalsorted$ISO %in% ListISO$ISO, ]
+write.csv(vizdata,'vizdata.csv')
