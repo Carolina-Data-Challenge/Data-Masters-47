@@ -9,7 +9,7 @@ Specifically, to submit your project you will be required to complete the follow
 
 ---
 **TABLEAU LINK: https://public.tableau.com/profile/malia.dunn.reier#!/vizhome/GDPbyInternetUsage/Story1
-**PASTE PUBLIC VIDEO LINK HERE: ___________________________**
+**PASTE PUBLIC VIDEO LINK HERE: https://www.youtube.com/watch?v=ljsYYJXaFZY&feature=youtu.be**
 
 ---
 
