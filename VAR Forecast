@@ -1,0 +1,93 @@
+library(dplyr)
+setwd('C:\\Users\\DR\\Documents\\MSA21\\Carolina Data Challenge')
+forecastdata<-read.csv(file.choose(),header=T)
+
+US<-forecastdata[forecastdata$Country=="United States",]
+China<-forecastdata[forecastdata$Country=="China",]
+Ven<-forecastdata[forecastdata$Country=="Venezuela",]
+
+
+
+US<-forecastdata[forecastdata$Country=="United States",]
+
+GDPUS<-US[US$Subject.Descriptor=="Gross domestic product per capita, constant prices",]
+
+GDPTransUS<-t(GDPUS)
+GDPTransUS1<-as.data.frame(GDPTransUS[4:45,])
+FinalGDPUS<-as.numeric(GDPTransUS1[,1])
+FinalGDPUS
+
+UnemployUS<-US[US$Subject.Descriptor=="Unemployment rate",]
+UnemTransUS<-t(UnemployUS)
+UnemTransUS1<-as.data.frame(UnemTransUS[4:45,])
+FinalUnemUS<-as.numeric(UnemTransUS1[,1])
+
+
+
+library(tis)
+library(sandwich)
+library(zoo)
+library(car)
+library(vars)
+lag_max <- 4
+var_df<-data.frame("GDPUS"=FinalGDPUS,"UnemployUS"=FinalUnemUS)
+BIC_choice <- matrix(0,lag_max,1)
+for (i in 1:lag_max) {
+  vars_est <- VAR(var_df,p=i,type=c("const"))
+  BIC_choice[i] <- BIC(vars_est)
+}
+
+lag_choice <- which(BIC_choice==min(BIC_choice))
+var_choose <- VAR(var_df,p=lag_choice,type=c("const"))
+gc_choose <- causality(var_choose,cause="UnemployUS")
+predictions <- predict(var_choose,n.ahead=5,ci=0.95)
+pdf("fancharts30.pdf")
+fanchart(predictions)
+var_decomp <- fevd(var_choose,n.ahead=20)
+irf_us30 <- irf(var_choose,impulse="UnemployUS",response="GDPUS",n.ahead=20,ortho=TRUE,cumulative=TRUE,ci=0.95)
+pdf("irf_us30.pdf")
+plot(irf_us30)
+dev.off()
+
+##################################################################################################################
+########################################China####################################################################
+#################################################################################################################
+
+
+China<-forecastdata[forecastdata$Country=="China",]
+
+GDPChina<-China[China$Subject.Descriptor=="Gross domestic product per capita, constant prices",]
+
+GDPTransChina<-t(GDPChina)
+GDPTransChina1<-as.data.frame(GDPTransChina[4:45,])
+FinalGDPChina<-as.numeric(GDPTransChina1[,1])
+FinalGDPChina
+
+UnemployChina<-China[China$Subject.Descriptor=="Unemployment rate",]
+UnemTransChina<-t(UnemployChina)
+UnemTransChina1<-as.data.frame(UnemTransChina[4:45,])
+FinalUnemChina<-as.numeric(UnemTransChina1[,1])
+
+
+
+
+lag_max <- 4
+var_df<-data.frame("GDPChina"=FinalGDPChina,"UnemployChina"=FinalUnemChina)
+BIC_choice <- matrix(0,lag_max,1)
+for (i in 1:lag_max) {
+  vars_est <- VAR(var_df,p=i,type=c("const"))
+  BIC_choice[i] <- BIC(vars_est)
+}
+
+lag_choice <- which(BIC_choice==min(BIC_choice))
+var_choose <- VAR(var_df,p=lag_choice,type=c("const"))
+gc_choose <- causality(var_choose,cause="UnemployChina")
+predictions <- predict(var_choose,n.ahead=5,ci=0.95)
+pdf("fanchartsChina1.pdf")
+fanchart(predictions)
+dev.off()
+var_decomp <- fevd(var_choose,n.ahead=20)
+irf_China1 <- irf(var_choose,impulse="GDPChina",response="UnemployChina",n.ahead=20,ortho=TRUE,cumulative=TRUE,ci=0.95)
+pdf("irf_China1.pdf")
+plot(irf_China1)
+dev.off()
