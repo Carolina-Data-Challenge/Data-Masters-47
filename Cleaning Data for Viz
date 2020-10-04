@@ -68,7 +68,7 @@ final <- fastmerge(sorted,population)
 
 #sort again
 finalsorted <- final %>%
-    arrange(ISO)
+  arrange(ISO)
 
 #create list of countries of interest
 ListISO <- finalsorted %>%
@@ -78,4 +78,189 @@ ListISO <- finalsorted %>%
 
 #select only countries of interest
 vizdata <- finalsorted[ finalsorted$ISO %in% ListISO$ISO, ]
+
+#add region and incomegroup to all obs
+i <- 1
+while (i < nrow(vizdata)) {
+  vizdata[(i+1),"Region"] <- vizdata[i,"Region"]
+  vizdata[(i+2),"Region"] <- vizdata[i,"Region"]
+  vizdata[(i+1),"IncomeGroup"] <- vizdata[i,"IncomeGroup"]
+  vizdata[(i+2),"IncomeGroup"] <- vizdata[i,"IncomeGroup"]
+  i = i+3
+}
+
+vizdata[55:57,47] <- 'Latin America & Caribbean'
+vizdata[76:78,47] <- 'East Asia & Pacific'
+vizdata[106:108,47] <- 'Sub-Saharan Africa'
+vizdata[109:111,47] <- 'Sub-Saharan Africa'
+vizdata[193:195,47] <- 'Sub-Saharan Africa'
+vizdata[214:216,47] <- 'East Asia & Pacific'
+vizdata[238:240,47] <- 'Middle East & North Africa'
+vizdata[277:279,47] <- 'Latin America & Caribbean'
+vizdata[298:300,47] <- 'Latin America & Caribbean'
+vizdata[316:318,47] <- 'East Asia & Pacific'
+vizdata[337:339,47] <- 'Europe & Central Asia'
+vizdata[511:513,47] <- 'East Asia & Pacific'
+vizdata[547:549,47] <- 'Latin America & Caribbean'
+vizdata[55:57,48] <- 'High income'
+vizdata[76:78,48] <- 'High income'
+vizdata[106:108,48] <- 'Low income'
+vizdata[109:111,48] <- 'Lower middle income'
+vizdata[193:195,48] <- 'Low income'
+vizdata[214:216,48] <- 'High income'
+vizdata[238:240,48] <- 'Upper middle income'
+vizdata[277:279,48] <- 'High income'
+vizdata[298:300,48] <- 'Upper middle income'
+vizdata[316:318,48] <- 'High income'
+vizdata[337:339,48] <- 'Upper middle income'
+vizdata[511:513,48] <- 'Lower middle income'
+vizdata[547:549,48] <- 'Upper middle income'
+
 write.csv(vizdata,'vizdata.csv')
+
+destroyX = function(es) {
+  f = es
+  for (col in c(1:ncol(f))){ #for each column in dataframe
+    if (startsWith(colnames(f)[col], "X") == TRUE)  { #if starts with 'X' ..
+      colnames(f)[col] <- substr(colnames(f)[col], 2, 100) #get rid of it
+    }
+  }
+  assign(deparse(substitute(es)), f, inherits = TRUE) #assign corrected data to original name
+}
+
+destroyX(cleandata)
+
+vizdata <- cleandata
+
+#add region and incomegroup to all obs
+i <- 1
+while (i < nrow(vizdata)) {
+  vizdata[(i+1),"Region"] <- vizdata[i,"Region"]
+  vizdata[(i+2),"Region"] <- vizdata[i,"Region"]
+  vizdata[(i+1),"IncomeGroup"] <- vizdata[i,"IncomeGroup"]
+  vizdata[(i+2),"IncomeGroup"] <- vizdata[i,"IncomeGroup"]
+  i = i+3
+}
+
+vizdata[55:57,47] <- 'Latin America & Caribbean'
+vizdata[76:78,47] <- 'East Asia & Pacific'
+vizdata[106:108,47] <- 'Sub-Saharan Africa'
+vizdata[109:111,47] <- 'Sub-Saharan Africa'
+vizdata[193:195,47] <- 'Sub-Saharan Africa'
+vizdata[214:216,47] <- 'East Asia & Pacific'
+vizdata[238:240,47] <- 'Middle East & North Africa'
+vizdata[277:279,47] <- 'Latin America & Caribbean'
+vizdata[298:300,47] <- 'Latin America & Caribbean'
+vizdata[316:318,47] <- 'East Asia & Pacific'
+vizdata[337:339,47] <- 'Europe & Central Asia'
+vizdata[511:513,47] <- 'East Asia & Pacific'
+vizdata[547:549,47] <- 'Latin America & Caribbean'
+vizdata[55:57,48] <- 'High income'
+vizdata[76:78,48] <- 'High income'
+vizdata[106:108,48] <- 'Low income'
+vizdata[109:111,48] <- 'Lower middle income'
+vizdata[193:195,48] <- 'Low income'
+vizdata[214:216,48] <- 'High income'
+vizdata[238:240,48] <- 'Upper middle income'
+vizdata[277:279,48] <- 'High income'
+vizdata[298:300,48] <- 'Upper middle income'
+vizdata[316:318,48] <- 'High income'
+vizdata[337:339,48] <- 'Upper middle income'
+vizdata[511:513,48] <- 'Lower middle income'
+vizdata[547:549,48] <- 'Upper middle income'
+
+str(vizdata)
+
+workset <- vizdata[ which(vizdata$measure!='Internet'), ]
+workset <- workset[-c(1,2)]
+workset <- workset[-c(49:68)]
+
+write.csv(workset,'workset.csv')
+
+
+#Create Calculated Field for GDPperCapita
+calc <- data.frame(matrix(ncol=42,nrow=0, dimnames=list(NULL, c(1980 ,
+                                                                1981 ,
+                                                                1982 ,
+                                                                1983 ,
+                                                                1984 ,
+                                                                1985 ,
+                                                                1986 ,
+                                                                1987 ,
+                                                                1988 ,
+                                                                1989 ,
+                                                                1990 ,
+                                                                1991 ,
+                                                                1992 ,
+                                                                1993 ,
+                                                                1994 ,
+                                                                1995 ,
+                                                                1996 ,
+                                                                1997 ,
+                                                                1998 ,
+                                                                1999 ,
+                                                                2000 ,
+                                                                2001 ,
+                                                                2002 ,
+                                                                2003 ,
+                                                                2004 ,
+                                                                2005 ,
+                                                                2006 ,
+                                                                2007 ,
+                                                                2008 ,
+                                                                2009 ,
+                                                                2010 ,
+                                                                2011 ,
+                                                                2012 ,
+                                                                2013 ,
+                                                                2014 ,
+                                                                2015 ,
+                                                                2016 ,
+                                                                2017 ,
+                                                                2018 ,
+                                                                2019 ,
+                                                                2020 ,
+                                                                2021))))
+calc <- destroyX(calc)
+col<- 1980
+i <- 1
+a <- 1
+
+while (i < nrow(workset)) {
+  for (col in 1980:2019) {
+    z <- toString(col)
+    calc[a,"Country"] <- workset[i,"Country"]
+    calc[a,"ISO"] <- workset[i,"ISO"]
+    calc[a,"Estimates.Start.After"] <- workset[i,"Estimates.Start.After"]
+    calc[a,"Region"] <- workset[i,"Region"]
+    calc[a,"IncomeGroup"] <- workset[i,"IncomeGroup"]
+    calc[a,"measure"] <- "GDPperCapita"
+    calc[a,toString(col)] <- (workset[i,z])*1000000000 / workset[i+1,z]
+    col = col + 1
+  }
+  i = i + 2
+  a = a + 1
+}  
+
+#Remove NAs
+calc[calc < 0] <- NA
+df1 <- calc
+
+
+#Pull Internet Data
+df2 <- vizdata[ which(vizdata$measure =='Internet'), ]
+df2  <- df2[-c(1,2)]
+df2 <- df2[-c(49:68)]
+df2[df2 < 0] <- NA
+
+write.csv(df1,'DF1.csv')
+write.csv(df2,'DF2.csv')
+
+#APPEND
+end <- fastmerge(calc,df2)
+
+endsorted <- end %>%
+  arrange(ISO)
+
+
+
