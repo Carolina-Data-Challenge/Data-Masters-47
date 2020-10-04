@@ -8,7 +8,7 @@ Specifically, to submit your project you will be required to complete the follow
 - Navigate to your team's management page in the portal. Once there, indicate that you have successfully submitted your project on time and select which sponsor prize category you would like your project to be considered for (if any).
 
 ---
-
+**TABLEAU LINK: https://public.tableau.com/profile/malia.dunn.reier#!/vizhome/GDPbyInternetUsage/Story1
 **PASTE PUBLIC VIDEO LINK HERE: ___________________________**
 
 ---
